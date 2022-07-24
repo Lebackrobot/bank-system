@@ -55,7 +55,7 @@ public:
         //sleep for one second
         this_thread::sleep_for(chrono::milliseconds(1000));
 
-        cout << "\033[1;30;107m #" << this->id << " (CONSULTA) \033[0m" << endl;
+        cout << "\033[1;30;107m #" << this->id << " (EXTRACT) \033[0m" << endl;
         cout << "-------------------------" << endl;
         cout << "VALUE              " << this->value;
         cout << endl << endl;
@@ -64,21 +64,51 @@ public:
     }
 };
 
+//_creditToAccount worker (Thread)
+void _creditToAccount(Account *account, int value) {
+    account->creditValue(value);
+    return;
+}
+
+//_debitToAccount worker (Thread)
+void _debitToAccount(Account *account, int value) {
+    account->debitValue(value);
+    return;
+}
+
+//_getAccountExtract worker (Thread)
+void _getAccountExtract(Account *account) {
+    account->getExtract();
+    return;
+}
+
 //Client Class
 class Client {
 public:
     void debitToAccount(Account &account, int value) {
-        account.debitValue(value);
+
+        //call debitToAccount worker
+        thread creditThread(_debitToAccount, &account, value);
+        creditThread.join();
+        
         return;
     }
 
     void creditToAccount(Account &account, int value) {
-        account.creditValue(value);
+
+        //call creditToAccount worker
+        thread creditThread(_creditToAccount, &account, value);
+        creditThread.join();
+
         return;
     }
 
     void getExtract(Account &account) {
-        account.getExtract();
+
+        //call getAccountExtract worker
+        thread getExtractThread(_getAccountExtract, &account); 
+        getExtractThread.join();
+
         return;
     }
 };
