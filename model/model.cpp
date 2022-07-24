@@ -64,19 +64,20 @@ public:
     }
 };
 
-//workers section
+//_creditToAccount worker (Thread)
 void _creditToAccount(Account *account, int value) {
     account->creditValue(value);
     return;
 }
 
+//_debitToAccount worker (Thread)
 void _debitToAccount(Account *account, int value) {
     account->debitValue(value);
     return;
 }
 
-void _getAccountExtract(Account *account)
-{
+//_getAccountExtract worker (Thread)
+void _getAccountExtract(Account *account) {
     account->getExtract();
     return;
 }
@@ -86,6 +87,7 @@ class Client {
 public:
     void debitToAccount(Account &account, int value) {
 
+        //call debitToAccount worker
         thread creditThread(_debitToAccount, &account, value);
         creditThread.join();
         
@@ -94,6 +96,7 @@ public:
 
     void creditToAccount(Account &account, int value) {
 
+        //call creditToAccount worker
         thread creditThread(_creditToAccount, &account, value);
         creditThread.join();
 
@@ -102,6 +105,7 @@ public:
 
     void getExtract(Account &account) {
 
+        //call getAccountExtract worker
         thread getExtractThread(_getAccountExtract, &account); 
         getExtractThread.join();
 
