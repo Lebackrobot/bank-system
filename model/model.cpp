@@ -19,32 +19,45 @@ public:
         this->mtxAccount = mtxAccount_;
     }
 
-    inline void notify(string tid) {
-        //this_thread::sleep_for(std::chrono::seconds(1));
-        unique_lock <mutex> lock(mtx);
-       
-        //thread unlocked
+    inline void notify(string id) {
+        cout << "semaphore 🟩 (Done) :: " << id << endl << endl;
+
+        // sleep for 100 miliseconds
+        this_thread::sleep_for(std::chrono::milliseconds(100));
+        
+
         count++;
+        unique_lock <mutex> lock(mtx);
+
+        
+        //thread unlocked
         cv.notify_one();
     }
 
-    inline void wait(string tid) {
+    inline void wait(string id) {
         unique_lock <mutex> lock(mtx);
 
         while (count == 0) {
-            // sleep for one second
-            this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-            
-            cout << endl << "🚦wait" << endl << endl;
-            
+            // sleep for 100 miliseconds
+            this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            cout << endl << "semaphore 🟥 (wait) :: " << id << endl;
+
             //thread locked
             cv.wait(lock);
 
         }
 
         count--;
-        //mtxAccount->unlock();
+
+        // sleep for 100 miliseconds
+        //this_thread::sleep_for(std::chrono::milliseconds(10));
+        //cout << endl << "semaphore 🟩 (go) :: " << id << endl;
+    }
+
+    int getCount() {
+        return count;
     }
 };
 
@@ -59,16 +72,12 @@ private:
     //callback function for debitValue and creditValue
     void _logExtract(string operation, int operationValue, int previusAccountValue) {
 
-        //sleep for one second
-        //this_thread::sleep_for(chrono::milliseconds(100));
-
         //show values in terminal
         cout << "\033[1;30;107m #" << this->id << " (" << operation << ") \033[0m" << endl;
-        cout << "------------------------" << endl;
+        cout << "--------------------" << endl;
         cout << "Previus value:      " << previusAccountValue << endl;
         cout << "Deposited value:    " << operationValue << endl;
         cout << "VALUE:              " << this->value << endl;
-        cout << endl << endl << endl;
     }
 
 
@@ -83,23 +92,37 @@ public:
 
 
 
-    void debitValue(int value) {
+    void debitValue(string client, int value) {
+        //sleep for one second
+        this_thread::sleep_for(chrono::milliseconds(100));
+
         //critical region (mutex)
         mtx->lock();
-            int previusAccountValue = this->value;                  //previus account value
-            this->value = this->value - value;                      //update value
-            this->_logExtract("DEBIT", value, previusAccountValue); //log extract
+            cout << endl << "❌ mutex lock " << endl << endl;
+
+            int previusAccountValue = this->value;                  // previus account value
+            this->value = this->value - value;                      // update value
+            this->_logExtract("DEBIT", value, previusAccountValue); // log extract
+        
+            cout << "✅ mutex unlock" << endl << endl;
         mtx->unlock();
 
         return; 
     }
 
-    void creditValue(int value) {
+    void creditValue(string client, int value) {
+        //sleep for one second
+        this_thread::sleep_for(chrono::milliseconds(100));
+        
         //critical region (mutex)
         mtx->lock();
-            int previusAccountValue = this->value;                     //previus account value
-            this->value = this->value + value;                         //update value
-            this->_logExtract("CREDIT", value, previusAccountValue);   //log extract 
+            cout << endl << "❌ mutex lock" << endl ;
+
+            int previusAccountValue = this->value;                   // previus account value
+            this->value = this->value + value;                       // update value
+            this->_logExtract("CREDIT", value, previusAccountValue); // log extract
+
+            cout << endl << "✅ mutex unlock" << endl ;
         mtx->unlock();
 
         return;
@@ -108,54 +131,22 @@ public:
     void getExtract(string client) {
 
         //critical region (semaphore)
-        semaphore.wait(id);
+        semaphore.wait(client);
                 // sleep for one second
                 this_thread::sleep_for(chrono::milliseconds(100));
+
                 mtx->lock();
-                    cout << "\033[1;30;107m #" << this->id << " (EXTRACT :: " << client << ") \033[0m" << endl;
-                    cout << "-----------------------------------" << endl;
-                    cout << "VALUE              " << this->value;
-                    cout << endl << endl;
+                //cout << endl << "❌ mutex lock" << endl << endl;
+
+                cout << "\033[1;30;107m #" << this->id << " (EXTRACT :: " << client << ") \033[0m" << endl;
+                cout << "-----------------------------------------" << endl;
+                cout << "VALUE              " << this->value;
+                cout << endl << endl;
+
+                //cout << endl << "✅ mutex unlock" << endl ;
                 mtx->unlock();
-        semaphore.notify(id);
+        semaphore.notify(client);
     
         return;
     }
 };
-
-//Client Class
-class Client {
-public:
-    void debitToAccount(Account &account, int value) {
-        account.debitValue(value);
-        return;
-    }
-
-    void creditToAccount(Account &account, int value) {
-        account.creditValue(value);
-        return;
-    }
-
-    void getExtract(string client, Account &account) {
-        account.getExtract(client);
-        return;
-    }
-};
-
-//_creditToAccount worker (Thread)
-void _creditToAccount(Account *account, int value) {
-    account->creditValue(value);
-    return;
-}
-
-//_debitToAccount worker (Thread)
-void _debitToAccount(Account *account, int value) {
-    account->debitValue(value);
-    return;
-}
-
-//_getAccountExtract worker (Thread)
-void _getAccountExtract(string client, Account *account) {
-    account->getExtract(client);
-    return;
-}
