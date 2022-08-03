@@ -9,8 +9,8 @@
 #include <chrono>
 
 //synchronization
-//#include <mutex>
-//#include <semaphore>
+#include <condition_variable>
+#include <mutex>
 
 //model classes
 #include "../model/model.cpp"
