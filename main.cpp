@@ -1,23 +1,23 @@
 #include "library/library.cpp"
 using namespace std;
 
-Semaphore SEMAPHORE;
-
-void task(string tid) {
-
-    SEMAPHORE.wait(tid);
-
-
-    SEMAPHORE.notify(tid);
-    return;
-}
-
+//drivem code
 int main() {
     Account account("Account 1", 100);
 
-    Client client1;
-    Client client2; 
-    Client client3;
+    //debit clients
+    thread client_debitToAccount1(_debitToAccount, "clientDebit 1", &account, getRandonNumber());
+    thread client_debitToAccount2(_debitToAccount, "clientDebit 2", &account, getRandonNumber());
+    thread client_debitToAccount3(_debitToAccount, "clientDebit 3", &account, getRandonNumber());
+    thread client_debitToAccount4(_debitToAccount, "clientDebit 4", &account, getRandonNumber());
+    thread client_debitToAccount5(_debitToAccount, "clientDebit 5", &account, getRandonNumber());
+    
+    //credit cleints
+    /* thread client_creditToAccount1(_creditToAccount, "cleintCredit 1", &account, getRandonNumber());
+    thread client_creditToAccount2(_creditToAccount, "clientCreditAccount 2", &account, getRandonNumber());
+    thread client_creditToAccount3(_creditToAccount, "clientCreditAccount 3", &account, getRandonNumber());
+    thread client_creditToAccount4(_creditToAccount, "clientCreditAccount 4", &account, getRandonNumber());
+    thread client_creditToAccount5(_creditToAccount, "clientCreditAccount 5", &account, getRandonNumber()); */
 
     //thread threadCredit(_creditToAccount, &account, 500);
     //thread threadDebit(_debitToAccount, &account, 600);
