@@ -3,9 +3,7 @@ using namespace std;
 
 //drivem code
 int main() {
-
     Account account("Account 1", 100);
-    Client client;
 
     //debit clients
     thread client_debitToAccount1(_debitToAccount, "clientDebit 1", &account, getRandonNumber());
@@ -51,5 +49,6 @@ int main() {
     client_getExtract9.join();
     client_getExtract10.join(); */
     return 0; 
+
 }
 
