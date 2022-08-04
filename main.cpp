@@ -55,8 +55,6 @@ int main() {
     client_getExtract8.join();
     client_getExtract9.join();
     client_getExtract10.join(); */
-    
+
     return 0; 
-
 }
-
