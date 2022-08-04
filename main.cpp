@@ -36,12 +36,12 @@ int main() {
     client_debitToAccount2.join();
     client_debitToAccount3.join();
     client_debitToAccount4.join();
+    client_debitToAccount5.join();
 
     client_creditToAccount1.join();
     client_creditToAccount2.join();
     client_creditToAccount3.join();
     client_creditToAccount4.join();
-    client_creditToAccount5.join();
     client_creditToAccount5.join();
 
 

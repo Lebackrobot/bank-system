@@ -139,7 +139,7 @@ public:
                 //cout << endl << "❌ mutex lock" << endl << endl;
 
                 cout << "\033[1;30;107m #" << this->id << " (EXTRACT :: " << client << ") \033[0m" << endl;
-                cout << "-----------------------------------------" << endl;
+                cout << "----------------------------------" << endl;
                 cout << "VALUE              " << this->value;
                 cout << endl << endl;
 
